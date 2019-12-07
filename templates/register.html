@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+    <head>
+
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- documentation at http://getbootstrap.com/docs/4.1/, alternative themes at https://bootswatch.com/ -->
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- https://favicon.io/emoji-favicons/books/ -->
+        <link href="/static/favicon.ico" rel="icon">
+
+        <link href="/static/styles.css" rel="stylesheet">
+
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+        <title>Register</title>
+
+    </head>
+
+    <!-- TODO: Collaboration policies -->
+
+    <body id="register">
+        <nav class="navbar navbar-expand-md navbar-light bg-light border">
+            <a class="navbar-brand" href="/"><span class="blue">StudyGroupMe</span></a>
+            <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </nav>
+
+        <form action="/register" method="post">
+            <table>
+                <tr>
+                    <th> <label>Subject</label> </th>
+                    <th> <label>Course Number</label> </th>
+                </tr>
+
+                {% for i in range(4) %}
+                <tr>
+                    <th>
+                        <select onchange="selected({{i}})" class="custom-select my-1 mr-sm-2" id="subject{{i}}" name="subject{{i}}">
+                            <option selected>Subject</option>
+
+                            {% for subject in subjects %}
+                                <option value={{subject}}>{{subject}}</option>
+                            {% endfor %}
+
+                        </select>
+                    </th>
+                    <th>
+                        <select class="custom-select my-1 mr-sm-2" disabled=True id="number{{i}}" name="number{{i}}">
+                            <option selected>Number</option>
+                        </select>
+                    </th>
+                </tr>
+                {% endfor %}
+            </table>
+
+
+
+
+            <button class="btn btn-primary" type="submit">Register</button>
+        </form>
+
+        <script>
+            let courses = JSON.parse('{{ courses | safe }}');
+
+            function selected(i) {
+
+                let id = "#number" + i;
+                var numberElement = document.querySelector(id);
+
+                id = "#subject" + i;
+                var subjectElement = document.querySelector(id);
+
+                if (subjectElement.value == "Subject")
+                {
+                    numberElement.innerHTML = "<option selected>Number</option>"
+                    numberElement.setAttribute("disabled", true);
+                }
+                else
+                {
+                    let numbers = courses[subjectElement.value];
+
+                    var collator = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'});
+                    numbers.sort(collator.compare);
+
+                    let html = "<option selected>Number</option>";
+
+                    for (let j = 0; j < numbers.length; j++)
+                    {
+                        html += "<option value=" + numbers[j] + ">" + numbers[j] + "</option>";
+                    }
+                    numberElement.innerHTML = html;
+
+                    numberElement.removeAttribute("disabled");
+
+
+                }
+
+            }
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,150 @@
+[
+  {
+    "courseID": "119758",
+    "classes": [
+      {
+        "classKey": 806110,
+        "term": "2020 Spring",
+        "session": "Full Term",
+        "sectionNumber": "001",
+        "bracketed": false,
+        "catalogSchool": "FAS",
+        "catalogSubject": "CHNSE",
+        "classStatus": "Active",
+        "courseDescription": "<p>Continuation of Chinese 150a. The course seeks to consolidate and hone students&rsquo; advanced Chinese ability through in-depth examination of Chinese society and culture.</p>",
+        "courseNumber": "150B",
+        "courseTitle": "Readings and Discussions in Academic and Professional Chinese",
+        "courseWebsite": "https://locator.tlt.harvard.edu/course/colgsas-119758/2019/spring/11821",
+        "meetings": [
+          {
+            "days": [
+              {
+                "day": "mon"
+              },
+              {
+                "day": "wed"
+              },
+              {
+                "day": "fri"
+              }
+            ],
+            "startTime": "10:30am",
+            "endTime": "11:45am",
+            "publishedLocation": "TBA",
+            "publishedInstructors": [
+              {
+                "instructorName": "Dan Wang",
+                "role": "HEAD"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseID": "115136",
+    "classes": [
+      {
+        "classKey": 805095,
+        "term": "2020 Spring",
+        "session": "Full Term",
+        "sectionNumber": "001",
+        "bracketed": false,
+        "catalogSchool": "FAS",
+        "catalogSubject": "COMPSCI",
+        "classStatus": "Active",
+        "courseDescription": "<p></p>",
+        "courseNumber": "358",
+        "courseTitle": "Computational Complexity, Cryptography, and Pseudorandomness",
+        "courseWebsite": "https://locator.tlt.harvard.edu/course/colgsas-115136/2019/spring/10806",
+        "meetings": [
+          {
+            "days": [
+              {
+                "day": "tba"
+              }
+            ],
+            "publishedLocation": "TBA",
+            "publishedInstructors": [
+              {
+                "instructorName": "Salil Vadhan",
+                "role": "HEAD"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "classKey": 799407,
+        "term": "2019 Fall",
+        "session": "Full Term",
+        "sectionNumber": "001",
+        "bracketed": false,
+        "catalogSchool": "FAS",
+        "catalogSubject": "COMPSCI",
+        "classStatus": "Active",
+        "courseDescription": "<p></p>",
+        "courseNumber": "358",
+        "courseTitle": "Computational Complexity, Cryptography, and Pseudorandomness",
+        "courseWebsite": "https://locator.tlt.harvard.edu/course/colgsas-115136/2019/fall/10794",
+        "meetings": [
+          {
+            "days": [
+              {
+                "day": "tba"
+              }
+            ],
+            "publishedLocation": "TBA",
+            "publishedInstructors": [
+              {
+                "instructorName": "Salil Vadhan",
+                "role": "HEAD"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "courseID": "214483",
+    "classes": [
+      {
+        "classKey": 824545,
+        "term": "2020 Spring",
+        "session": "Full Term",
+        "sectionNumber": "001",
+        "bracketed": false,
+        "catalogSchool": "FAS",
+        "catalogSubject": "COMPSCI",
+        "classStatus": "Active",
+        "courseDescription": "<p>Topics from the literature on theoretical computer science addressing technical problems of societal concern. Focus for 2019-2020: Algorithmic Fairness and Statistical Validity in Adaptive (Exploratory) Data Analysis.</p>",
+        "courseNumber": "226R",
+        "courseTitle": "Topics in Theory for Society: Fairness and Validity",
+        "courseWebsite": "https://locator.tlt.harvard.edu/course/colgsas-214483/2019/spring/20358",
+        "meetings": [
+          {
+            "days": [
+              {
+                "day": "mon"
+              },
+              {
+                "day": "wed"
+              }
+            ],
+            "startTime": "09:00am",
+            "endTime": "10:15am",
+            "publishedLocation": "TBA",
+            "publishedInstructors": [
+              {
+                "instructorName": "Cynthia Dwork",
+                "role": "HEAD"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

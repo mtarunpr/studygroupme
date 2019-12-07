@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    MyGroups
+{% endblock %}
+
+{% block main %}
+
+
+<h1 align="left">{{group['name']}}</h1>
+<p align="left">{{group['description']}}</p>
+<p align="left">GroupMe link: {{group['groupme']}}</p>
+<p align="left">Max size: {{group['maxsize']}}</p> <!-- TODO: change -->
+<h4 align="left">Events</h4>
+
+
+
+  <!-- Trigger the modal with a button -->
+  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Create Event</button>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Create new event</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+
+        <form method="post" action="/groups">
+
+        <div class="form-group dropdown">
+        <select required name="purpose" class="form-control">
+              <option selected disabled>Purpose</option>
+              <option value="Problem Set">Problem Set</option>
+              <option value="Exam Review">Exam Review</option>
+              <option value="Group Study">Group Study</option>
+              <option value="Reading">Reading</option>
+              <option value="Other">Other</option>
+        </select>
+        </div>
+
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="description" placeholder="Description" type="text">
+        </div>
+
+            <div class='col-md-6'>
+               <div class="form-group">
+                  <label class="control-label">Starting time</label>
+                  <div class='input-group date' id='datetimepicker1'>
+                     <input required name="start" type='text' class="form-control">
+                     <span class="input-group-addon">
+                     <span class="glyphicon glyphicon-calendar"></span>
+                     </span>
+                  </div>
+            </div>
+            </div>
+
+            <div class='col-md-6'>
+               <div class="form-group">
+                  <label class="control-label">Ending time</label>
+                  <div class='input-group date' id='datetimepicker2'>
+                     <input required name="end" type='text' class="form-control">
+                     <span class="input-group-addon">
+                     <span class="glyphicon glyphicon-calendar"></span>
+                     </span>
+                  </div>
+            </div>
+            </div>
+
+        <div class="form-group">
+            <input required class="form-control" name="location" placeholder="Location" type="text">
+        </div>
+
+        <div class="form-group">
+            <input class="btn btn-info" type="submit" value="Submit">
+        </div>
+
+        <input type="hidden" name="create-event" value="True">
+        <input type="hidden" name="group-id" value="{{group['id']}}">
+        </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  $(function () {
+    $('#datetimepicker1').datetimepicker();
+    $('#datetimepicker2').datetimepicker();
+ });
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/momentjs/2.14.1/moment.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> <!-- Problematic, messes up CSS -->
+
+{% endblock %}

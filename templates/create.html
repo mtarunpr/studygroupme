@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Create Group
+{% endblock %}
+
+{% block main %}
+
+
+
+<form action="/create" method="post">
+        <div class="form-group">
+            <input required autocomplete="off" autofocus class="form-control" name="name" placeholder="Name" type="text">
+        </div>
+
+        <div class="form-group">
+            <input class="form-control" name="description" placeholder="Description" type="text">
+        </div>
+
+        <div class="form-group">
+            <label class="radio-inline"><input type="radio" name="visibility" value="public" checked>Public</label><br>
+            <label class="radio-inline"><input type="radio" name="visibility" value="private">Private</label>
+        </div>
+
+        <div class="form-group">
+            <input required type="number" class="form-control" min="2" max="12" placeholder="Max size" name="maxsize">
+        </div>
+
+        <div class="form-group dropdown">
+        <select name="course" class="form-control">
+            <option selected disabled>Class</option>
+            {% for course in courses %}
+                <option value="{{course['id']}}">{{course['subject']}} {{course['courseno']}}</option>
+            {% endfor %}
+        </select>
+        </div>
+
+        <div class="form-group">
+                <button type="submit" class="btn btn-outline-danger btn-lg">Submit</button>
+        </div>
+    </form>
+
+{% endblock %}
