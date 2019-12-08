@@ -6,21 +6,31 @@
 
 {% block main %}
 
-{% for group in groups %}
 
-<div class="card" style="width: 18rem;">
-  <div class="card-body">
-    <h5 class="card-title">{{group['name']}}</h5>
-    <p class="card-text">{{group['courseid']}}</p>
-    <p class="card-text">{{group['description']}}</p>
-    <p class="card-text">Max size: {{group['maxsize']}}</p> <!-- TODO: Change to 6/8 etc. -->
-    <form action="/groups" method="post">
-        <button type="submit" href="#" class="btn btn-primary">Details</a>
-        <input type="hidden" name="group-id" value="{{group['id']}}">
-    </form>
-  </div>
+
+{% for group_row in groups | batch(3, "blank") %}
+<div class="row">
+    {% for group in group_row %}
+    {% if group != "blank" %}
+    <div class="col-sm">
+            <div class="card bg-light mb-3 h-100" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{group['name']}}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{group['course']}} (Size: {{group['size']}}/{{group['maxsize']}})</h6>
+                    <p class="card-text">{{group['description']}}</p>
+                    <form action="/groups" method="post">
+                        <button type="submit" href="#" class="btn btn-sm btn-outline-danger">Details</a>
+                        <input type="hidden" name="group-id" value="{{group['id']}}">
+                    </form>
+                </div>
+            </div>
+    </div>
+    {% else %}
+    <div class="col-sm"></div>
+    {% endif %}
+    {% endfor %}
 </div>
-
 {% endfor %}
+
 
 {% endblock %}

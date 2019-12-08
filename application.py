@@ -12,7 +12,11 @@ import googleapiclient.discovery
 import pickle
 import json
 from groupy.client import Client
+from groupy.api.memberships import Memberships
+from groupy.api.bots import Bot, Bots
 from datetime import datetime
+
+url = "https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080"
 
 # Constants for Google Calendar API
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -74,7 +78,6 @@ def register_required(f):
     return decorated_function
 
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     # If user reached home page via GET, check if logged in
@@ -90,8 +93,9 @@ def index():
             if session["user_id"] is None:
                 return redirect(url_for("register"))
 
-            # Display user's calendar
-            return render_template("calendar.html", userinfo=session.get("userinfo"))
+            # If registered, display user's calendar
+            calendar_id = db.execute("SELECT calendar_id FROM users WHERE id = :user_id", user_id=session["user_id"])[0]["calendar_id"]
+            return render_template("calendar.html", userinfo=session.get("userinfo"), calendar_id=calendar_id)
 
     # If user clicks on login button on home page, redirect to /login
     else:
@@ -122,7 +126,7 @@ def callback():
 
 @app.route("/login")
 def login():
-    return oauth.cs50.authorize_redirect("https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080/callback")
+    return oauth.cs50.authorize_redirect(url + "/callback")
     #(url_for("callback", _external=True))
 
 
@@ -152,8 +156,10 @@ def register():
 
     # User reached route via POST (i.e. clicked on register button)
     else:
+        count = 0
+
         # Make sure if a subject is selected, a number is also selected
-        for i in range(4):
+        for i in range(5):
             sub_name = "subject" + str(i)
             num_name = "number" + str(i)
 
@@ -161,11 +167,42 @@ def register():
             if request.form.get(sub_name) != "Subject" and request.form.get(num_name) == "Number":
                 return redirect(url_for("register"))
 
+            if request.form.get(sub_name) == "Subject":
+                count += 1
+
+        # Make sure user inputted at least one class
+        if count == 5:
+            return redirect(url_for("register"))
+
+        service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
+
+        # Create personal calendar
+        calendar = {
+            # Set title to
+            'summary': session.get("userinfo")["name"] + " - StudyGroupMe",
+            'timeZone': 'America/New_York'
+        }
+
+        created_calendar = service.calendars().insert(body=calendar).execute()
+
+        print(created_calendar['id'])
+
+        # Set personal calendar viewing permissions to public
+        # TODO: Change to private and get user to login?
+        rule = {
+            'scope': {
+                'type': 'default'
+            },
+            'role': 'reader'
+        }
+
+        created_rule = service.acl().insert(calendarId=created_calendar['id'], body=rule).execute()
+
         # Insert user into users table, set session's user_id
-        session["user_id"] = db.execute("INSERT INTO users (name, email) VALUES (:name, :email)", name=session.get("userinfo")["name"], email=session.get("userinfo")["email"])
+        session["user_id"] = db.execute("INSERT INTO users (name, email, calendar_id) VALUES (:name, :email, :calendar_id)", name=session.get("userinfo")["name"], email=session.get("userinfo")["email"], calendar_id=created_calendar['id'])
 
         # Insert user's classes into database
-        for i in range(4):
+        for i in range(5):
             subject = request.form.get("subject" + str(i))
             courseno = request.form.get("number" + str(i))
 
@@ -230,9 +267,10 @@ def create():
         maxsize = request.form.get("maxsize")
         course_id = request.form.get("course")
 
-        # GROUP ME STUFF
+        # GROUPME STUFF
         new_group = client.groups.create(name=name)
         new_group.update(share=True)
+        new_group.create_bot(name="StudyGroupMe", callback_url=url+"/groupme")
         groupme_link = client.groups.list()[0].share_url
 
         group_id = db.execute("INSERT INTO groups (name, description, ispublic, course_id, maxsize, groupme) VALUES (:name, :description, :ispublic, :course_id, :maxsize, :groupme)", name=name, description=description, ispublic=ispublic, course_id=course_id, maxsize=maxsize, groupme=groupme_link)
@@ -246,6 +284,31 @@ def create():
 @login_required
 @register_required
 def join():
+    # If Join Group link was clicked
+    if request.args.get("group_id"):
+        group_id = request.args.get("group_id")
+
+        # Check if user is already member of the group
+        isMember = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id AND user_id = :user_id", group_id=group_id, user_id=session["user_id"])[0]['count(*)']
+
+        # Check if user belongs to the class
+        # associated with the group to be joined
+        belongsToClass = db.execute("SELECT count(*) FROM classes WHERE user_id = :user_id AND course_id = (SELECT course_id FROM groups WHERE id = :group_id)", user_id=session["user_id"], group_id=group_id)[0]['count(*)']
+
+        # Check if group is private
+        isPublic = db.execute("SELECT ispublic FROM groups WHERE id = :group_id", group_id=group_id)[0]["ispublic"]
+
+        print(isMember)
+        print(belongsToClass)
+        print(isPublic)
+
+        # If the user is not already a member of the group
+        # and is in the corresponding class, then add him to the group
+        if not isMember and belongsToClass and isPublic:
+            db.execute("INSERT INTO members VALUES (:group_id, :user_id)", group_id=group_id, user_id=session["user_id"])
+
+        # TODO: Add all current/future events of group to user's personal Google calendar
+
     courses = db.execute("SELECT * FROM courses WHERE id IN (SELECT course_id FROM classes WHERE user_id = :user_id)", user_id=session["user_id"])
     calendars = db.execute("SELECT * FROM calendars WHERE course_id IN (SELECT course_id FROM classes WHERE user_id = :user_id)", user_id=session["user_id"])
     return render_template("join.html", userinfo=session.get("userinfo"), courses=courses, calendars=json.dumps(calendars))
@@ -255,18 +318,28 @@ def join():
 @login_required
 @register_required
 def groups():
+    # If user navigated to /groups
     if request.method == "GET":
         groups = db.execute("SELECT * FROM groups WHERE id IN (SELECT group_id FROM members WHERE user_id = :user_id)", user_id=session["user_id"])
+        for group in groups:
+            group["size"] = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"])[0]["count(*)"]
+            course = db.execute("SELECT * FROM courses WHERE id=:course_id", course_id=group["course_id"])[0]
+            group["course"] = course["subject"] + " " + course["courseno"]
         return render_template("groups.html", userinfo=session.get("userinfo"), groups=groups)
+
+    # If user clicked on 'Details' button
     else:
         group_id = request.form.get("group-id")
         group = db.execute("SELECT * FROM groups WHERE id = :group_id", group_id=group_id)[0]
+
+        group["size"] = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"])[0]["count(*)"]
+        course = db.execute("SELECT * FROM courses WHERE id=:course_id", course_id=group["course_id"])[0]
+        group["course"] = course["subject"] + " " + course["courseno"]
 
         # If event creation form was submitted
         if request.form.get("create-event"):
 
             # TODO: Insert only if group is public
-
             purpose = request.form.get("purpose")
             description = request.form.get("description")
             start_unf = request.form.get("start")
@@ -290,11 +363,13 @@ def groups():
             group_name = db.execute("SELECT name FROM groups WHERE id = :group_id", group_id=group_id)[0]['name']
 
             # Create event in public calendar of associated class
+            # TODO: make sure none of the fields are left blank -- error when concatenating the "NoneType" to str
+            # TODO: open Join in same tab
             service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
             event = {
               'summary': group_name + " - " +  course['subject'] + " " + course['courseno'] + " " + purpose,
               'location': location,
-              'description': description,
+              'description': description + "\n<a target='_top' href='" + url + "/join?group_id=" + group_id + "')'>Join Group!</a>",
               'start': {
                 'dateTime': start,
                 'timeZone': 'America/New_York',
@@ -308,10 +383,15 @@ def groups():
             event = service.events().insert(calendarId=calendar_id, body=event).execute()
             print('Event created: '+ (event.get('htmlLink')))
 
+            calendars = db.execute("SELECT calendar_id FROM users WHERE id IN (SELECT user_id FROM members WHERE group_id = :group_id)", group_id=group_id)
+            for calendar in calendars:
+                event = service.events().insert(calendarId=calendar["calendar_id"], body=event).execute()
+
             # Insert event into database
             db.execute("INSERT INTO events (group_id, purpose, location, description, start, end) VALUES (:group_id, :purpose, :location, :description, :start, :end)", group_id=group_id, purpose=purpose, location=location, description=description, start=start, end=end)
 
             # TODO: Also insert event into personal calendars of those in the group
+
 
 
         return render_template("grouphome.html", userinfo=session.get("userinfo"), group=group)
@@ -322,3 +402,28 @@ def groups():
 @register_required
 def settings():
     return render_template("settings.html", userinfo=session.get("userinfo"))
+
+
+@app.route("/groupme", methods=["POST"])
+def groupme():
+
+    # When the first group member joins the GroupMe group
+    if request.json.get("system") and "joined the group" in request.json.get("text"):
+        groupme_id = request.json.get("group_id")
+        group = client.groups.get(id=groupme_id)
+
+        # Delete the bot associated with this group
+        for bot in client.bots.list():
+            if bot.group_id == groupme_id:
+                bot.destroy()
+
+        # Make the newly joined member the owner
+        for member in group.members:
+            if member.user_id != client.user.get_me()['id']:
+                group.change_owners(member.user_id)
+                break
+
+        # Leave the group
+        group.leave()
+
+    return redirect("/")

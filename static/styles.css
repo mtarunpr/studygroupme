@@ -51,23 +51,30 @@ table
     text-align: left;
 }
 
-
-#index
+#bodyindex h1
 {
         text-align: center;
-        margin: 0;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        -ms-transform: translate(-50%, -50%);
-        transform: translate(-50%, -50%);
+        font-size: 80px;
+        color: white;
+        text-shadow: 4px 6px 6px #000000;
+        margin-top: 16%;
+
 }
 
-#id_index
+#buttona
 {
-
-
+        text-align: center;
+        font-size: 30px;
 }
+
+#heading1
+{
+        text-align: center;
+        font-size: 35px;
+        color: white;
+        text-shadow: 4px 6px 6px #000000;
+}
+
 
 th, tr
 {
@@ -83,4 +90,186 @@ table
 {
     margin: auto;
     margin-top: 5%;
+}
+
+
+
+
+
+
+body {
+  font-family: "Lato", sans-serif;
+}
+
+.sidenav
+{
+    width: 18%;
+    position: fixed;
+    z-index: 1;
+    top: 12%;
+    left: 2%;
+    overflow-x: hidden;
+    padding: 8px 0;
+    text-align: left
+}
+
+.course_box
+{
+    border-width: 1.45px;
+    border-radius: 5px;
+    border-style: solid;
+    border-color: #DCDCDC;
+    background: #F8F8F8;
+    margin-top: 2px;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #dc143c;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #8b0000;
+}
+
+.main {
+  margin-left: 140px; /* Same width as the sidebar + left position in px */
+  font-size: 28px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+
+
+.body
+{
+    font-family:Gill Sans MT;
+    padding:10px;
+}
+.fieldset
+{
+    border: solid 1px #000;
+    padding:10px;
+    display:block;
+    clear:both;
+    margin:5px 0px;
+}
+.legend
+{
+    padding:0px 10px;
+    background:black;
+    color:#FFF;
+}
+.input.add
+{
+    float:right;
+}
+.input.fieldname
+{
+    float:left;
+    clear:left;
+    display:block;
+    margin:5px;
+}
+.select.fieldtype
+{
+    float:left;
+    display:block;
+    margin:5px;
+}
+.input.remove
+{
+    float:left;
+    display:block;
+    margin:5px;
+}
+#yourform label
+{
+    float:left;
+    clear:left;
+    display:block;
+    margin:5px;
+}
+#yourform input, #yourform textarea
+{
+    float:left;
+    display:block;
+    margin:5px;
+}
+
+#createbody
+{
+    text-align: left;
+    margin-right: 25%;
+    margin-left: 25%;
+}
+
+#createbody p
+{
+    margin-bottom: 5%;
+}
+
+input[type=number]
+{
+    margin-top: 10px;
+    width: 30%;
+}
+
+.card-body
+{
+    text-align: left;
+    margin-left: 5%;
+}
+
+.row
+{
+    margin-bottom: 1.5%;
+}
+
+.card .btn
+{
+    position: absolute;
+    right: 5%;
+    bottom: 10%;
+}
+
+.col-sm
+{
+    margin-bottom: 1.5%;
+}
+
+#grouphome
+{
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+#grouphome p
+{
+    font-size: 16px;
+}
+
+#grouphome h4
+{
+    color: gray;
+}
+
+.left
+{
+    text-align: left;
+}
+
+#calendar-div p
+{
+    font-size: 13px;
+}
+
+
+#text_join
+{
+    color: black;
+    margin-left: 26%;
+    margin-right: 26%;
 }

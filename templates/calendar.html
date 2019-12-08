@@ -6,4 +6,16 @@
 
 {% block main %}
 
+<div id="calendar-div">
+
+</div>
+
+<script>
+    let calendar_div = document.querySelector('#calendar-div')
+    window.onload = function()
+    {
+        calendar_div.innerHTML = '<iframe src="https://calendar.google.com/calendar/embed?src={{calendar_id}}&ctz=America%2FNew_York" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>'
+    }
+</script>
+
 {% endblock %}

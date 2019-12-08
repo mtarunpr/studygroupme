@@ -6,59 +6,17 @@
 
 {% block main %}
 
-<!DOCTYPE html>
-
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-
-.sidenav {
-  height: 100%;
-  width: 240px;
-  position: fixed;
-  z-index: 1;
-  top: 75px;
-  left: 0;
-  background-color: #990000;
-  overflow-x: hidden;
-  padding-top: 20px;
-}
-
-.sidenav a {
-  padding: 6px 8px 6px 8px;
-  text-decoration: none;
-  font-size: 30px;
-  color: #FFFFFF;
-  display: block;
-}
-
-.sidenav a:hover {
-  color: #f1f1f1;
-}
-
-.main {
-  margin-left: 240px; /* Same as the width of the sidenav */
-  font-size: 28px; /* Increased text to enable scrolling */
-  padding: 0px 10px;
-}
-
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
-}
-</style>
-</head>
-<body>
+<body onload="renderCalendar({{courses[0]['id']}})">
 
 <div class="sidenav">
   {% for course in courses %}
+  <div class="course_box">
     <a href="#" onclick="renderCalendar({{course['id']}})">{{course['subject']}} {{course['courseno']}}</a>
+  </div>
   {% endfor %}
 </div>
 
 <div class="main" id="calendar-div">
-  <iframe src="https://calendar.google.com/calendar/embed?src=cm5uqi608rg59bd03bmlsiea1k@group.calendar.google.com&ctz=America%2FNew_York" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
 </div>
 
 <script>
@@ -75,11 +33,12 @@
       }
     }
     iframe = '<iframe src="https://calendar.google.com/calendar/embed?src=' + calendar_id + '&ctz=America%2FNew_York" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>';
-    document.querySelector('#calendar-div').innerHTML = iframe;
+    document.querySelector('#calendar-div').innerHTML = "<p id='text_join'>For each class, you can find all the study events in the calendar below. Click on an event to see the description and an option to join the group.</p>" + iframe;
   }
+
 </script>
 
 </body>
-</html>
+
 
 {% endblock %}

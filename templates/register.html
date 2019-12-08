@@ -28,7 +28,7 @@
 
     <body id="register">
         <nav class="navbar navbar-expand-md navbar-light bg-light border">
-            <a class="navbar-brand" href="/"><span class="blue">StudyGroupMe</span></a>
+            <a class="navbar-brand" href="/"><span class="red">StudyGroupMe</span></a>
             <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbar" data-toggle="collapse" type="button">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -41,7 +41,7 @@
                     <th> <label>Course Number</label> </th>
                 </tr>
 
-                {% for i in range(4) %}
+                {% for i in range(5) %}
                 <tr>
                     <th>
                         <select onchange="selected({{i}})" class="custom-select my-1 mr-sm-2" id="subject{{i}}" name="subject{{i}}">

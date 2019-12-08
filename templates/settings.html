@@ -34,14 +34,14 @@
 
     <body id="register">
 
-        <form action="/register" method="post">
+        <form action="/settings" method="post">
             <table>
                 <tr>
                     <th> <label>Subject</label> </th>
                     <th> <label>Course Number</label> </th>
                 </tr>
 
-                {% for i in range(4) %}
+                {% for i in range(5) %}
                 <tr>
                     <th>
                         <select onchange="selected({{i}})" class="custom-select my-1 mr-sm-2" id="subject{{i}}" name="subject{{i}}">
@@ -61,6 +61,66 @@
                 </tr>
                 {% endfor %}
             </table>
+
+
+
+
+
+
+
+
+<!--<div id="readroot" style="display: none">-->
+
+<!--	<input type="button" value="Remove review"-->
+<!--		onclick="this.parentNode.parentNode.removeChild(this.parentNode);" /><br /><br />-->
+
+
+<!--		<input name="cd" value="title" />-->
+
+<!--</div>-->
+
+
+
+
+
+<!--<form method="post" action="/cgi-bin/show_params.cgi">-->
+
+<!--	<span id="writeroot"></span>-->
+
+<!--	<input type="button" id="moreFields" value="Give me more fields!" />-->
+<!--	<input type="submit" value="Send form" />-->
+
+<!--</form>-->
+
+
+<!--<script>-->
+<!--var counter = 0;-->
+
+<!--function moreFields() {-->
+<!--	counter++;-->
+<!--	var newFields = document.getElementById('readroot').cloneNode(true);-->
+<!--	newFields.id = '';-->
+<!--	newFields.style.display = 'block';-->
+<!--	var newField = newFields.childNodes;-->
+<!--	for (var i=0;i<newField.length;i++) {-->
+<!--		var theName = newField[i].name-->
+<!--		if (theName)-->
+<!--			newField[i].name = theName + counter;-->
+<!--	}-->
+<!--	var insertHere = document.getElementById('writeroot');-->
+<!--	insertHere.parentNode.insertBefore(newFields,insertHere);-->
+<!--}-->
+
+<!--window.onload = moreFields;-->
+<!--</script>-->
+
+
+
+
+
+<p></p>
+
+
 
 
 
@@ -109,26 +169,6 @@
     </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

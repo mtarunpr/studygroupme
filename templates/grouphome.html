@@ -6,17 +6,18 @@
 
 {% block main %}
 
-
-<h1 align="left">{{group['name']}}</h1>
-<p align="left">{{group['description']}}</p>
-<p align="left">GroupMe link: {{group['groupme']}}</p>
-<p align="left">Max size: {{group['maxsize']}}</p> <!-- TODO: change -->
-<h4 align="left">Events</h4>
-
+<div id="grouphome">
+    <h1 align="left">{{group['name']}}</h1>
+    <h4 align="left">{{group['course']}} (Size: {{group['size']}}/{{group['maxsize']}})</h4>
+    <p align="left"> <b>Description:</b> {{group['description']}}</p>
+    <p align="left"><a href="{{group['groupme']}}" target="_blank"> <b>GroupMe Link</b> </a></h4>
+    <h3 align="left">Events</h3>
 
 
   <!-- Trigger the modal with a button -->
-  <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Create Event</button>
+  <div class="left">
+      <button type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal">Create Event</button>
+  </div>
 
   <!-- Modal -->
   <div class="modal fade" id="myModal" role="dialog">
@@ -51,7 +52,7 @@
                <div class="form-group">
                   <label class="control-label">Starting time</label>
                   <div class='input-group date' id='datetimepicker1'>
-                     <input required name="start" type='text' class="form-control">
+                     <input required autocomplete="off" name="start" type='text' class="form-control">
                      <span class="input-group-addon">
                      <span class="glyphicon glyphicon-calendar"></span>
                      </span>
@@ -63,7 +64,7 @@
                <div class="form-group">
                   <label class="control-label">Ending time</label>
                   <div class='input-group date' id='datetimepicker2'>
-                     <input required name="end" type='text' class="form-control">
+                     <input required autocomplete="off" name="end" type='text' class="form-control">
                      <span class="input-group-addon">
                      <span class="glyphicon glyphicon-calendar"></span>
                      </span>
@@ -72,7 +73,7 @@
             </div>
 
         <div class="form-group">
-            <input required class="form-control" name="location" placeholder="Location" type="text">
+            <input required autocomplete="off" class="form-control" name="location" placeholder="Location" type="text">
         </div>
 
         <div class="form-group">
@@ -88,6 +89,7 @@
 
     </div>
   </div>
+</div>
 
 <script>
   $(function () {
