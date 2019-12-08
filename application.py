@@ -262,15 +262,16 @@ def create():
     else:
         name = request.form.get("name")
         description = request.form.get("description")
-        visibility = request.form.get("visibility")
-        ispublic = True if visibility == "public" else False
+        ispublic = True # Uncomment lines below after implementing inviting
+        #visibility = request.form.get("visibility")
+        #ispublic = False if visibility == "private" else True
         maxsize = request.form.get("maxsize")
         course_id = request.form.get("course")
 
         # GROUPME STUFF
         new_group = client.groups.create(name=name)
         new_group.update(share=True)
-        new_group.create_bot(name="StudyGroupMe", callback_url=url+"/groupme")
+        new_group.create_bot(name="StudyGroupMe", callback_url=url+"/groupme", dm_notification=False)
         groupme_link = client.groups.list()[0].share_url
 
         group_id = db.execute("INSERT INTO groups (name, description, ispublic, course_id, maxsize, groupme) VALUES (:name, :description, :ispublic, :course_id, :maxsize, :groupme)", name=name, description=description, ispublic=ispublic, course_id=course_id, maxsize=maxsize, groupme=groupme_link)
@@ -307,7 +308,36 @@ def join():
         if not isMember and belongsToClass and isPublic:
             db.execute("INSERT INTO members VALUES (:group_id, :user_id)", group_id=group_id, user_id=session["user_id"])
 
-        # TODO: Add all current/future events of group to user's personal Google calendar
+            # TODO: Add all current/future events of group to user's personal Google calendar
+
+            calendar_id = db.execute("SELECT calendar_id FROM users WHERE id = :user_id", user_id=session['user_id'])[0]['calendar_id']
+
+            # Select all current/future events in group
+            # TODO: Change -05:00 to dynamic timezone
+            events = db.execute("SELECT * FROM events WHERE group_id = :group_id AND replace(end, '-05:00', '') > strftime('%Y-%m-%dT%H:%M:%S', datetime('now', '-5 hours'))", group_id=group_id)
+
+            service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
+            for event in events:
+                group_name = db.execute("SELECT name FROM groups WHERE id = :group_id", group_id=group_id)[0]['name']
+                course_id = db.execute("SELECT course_id FROM groups WHERE id = :group_id", group_id=group_id)[0]['course_id']
+                course = db.execute("SELECT subject, courseno FROM courses WHERE id = :course_id", course_id = course_id)[0]
+                gcal_event = {
+                  'summary': group_name + " - " +  course['subject'] + " " + course['courseno'] + " " + event['purpose'],
+                  'location': event['location'],
+                  'description': event['description'],
+                  'start': {
+                    'dateTime': event['start'],
+                    'timeZone': 'America/New_York',
+                  },
+                  'end': {
+                    'dateTime': event['end'],
+                    'timeZone': 'America/New_York',
+                  }
+                }
+
+                gcal_event = service.events().insert(calendarId=calendar_id, body=gcal_event).execute()
+                print('Event created: '+ (gcal_event.get('htmlLink')))
+
 
     courses = db.execute("SELECT * FROM courses WHERE id IN (SELECT course_id FROM classes WHERE user_id = :user_id)", user_id=session["user_id"])
     calendars = db.execute("SELECT * FROM calendars WHERE course_id IN (SELECT course_id FROM classes WHERE user_id = :user_id)", user_id=session["user_id"])
@@ -336,6 +366,7 @@ def groups():
         course = db.execute("SELECT * FROM courses WHERE id=:course_id", course_id=group["course_id"])[0]
         group["course"] = course["subject"] + " " + course["courseno"]
 
+
         # If event creation form was submitted
         if request.form.get("create-event"):
 
@@ -346,9 +377,27 @@ def groups():
             end_unf = request.form.get("end")
             location = request.form.get("location")
 
+            # Create datetime objects
+            start_datetime = datetime.strptime(start_unf, "%m/%d/%Y %I:%M %p")
+            end_datetime = datetime.strptime(end_unf, "%m/%d/%Y %I:%M %p")
+
+            # Ensure start is before end and start not in past
+            if end_datetime <= start_datetime or start_datetime < datetime.now():
+                # Select all current / upcoming events
+                # TODO: Change -05:00 to dynamic timezone
+                group["events"] = db.execute("SELECT * FROM events WHERE group_id = :group_id AND replace(end, '-05:00', '') > strftime('%Y-%m-%dT%H:%M:%S', datetime('now', '-5 hours'))", group_id=group["id"])
+                group["events"] = sorted(group["events"], key = lambda i: i["start"])
+
+                for event in group["events"]:
+                    event["start"] = datetime.strptime(event["start"].rsplit('-', 1)[0], "%Y-%m-%dT%H:%M:%S").strftime("%b %d, %Y - %I:%M %p")
+                    event["end"] = datetime.strptime(event["end"].rsplit('-', 1)[0], "%Y-%m-%dT%H:%M:%S").strftime("%b %d, %Y - %I:%M %p")
+
+                # Show group home with error
+                return render_template("grouphome.html", userinfo=session.get("userinfo"), group=group, error=True)
+
             # Format datetimes in the Google Calendar API format
-            start = datetime.strptime(start_unf, "%m/%d/%Y %I:%M %p").strftime("%Y-%m-%dT%H:%M:%S")
-            end = datetime.strptime(end_unf, "%m/%d/%Y %I:%M %p").strftime("%Y-%m-%dT%H:%M:%S")
+            start = start_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+            end = end_datetime.strftime("%Y-%m-%dT%H:%M:%S")
 
             # Append timezone
             start += "-05:00" # TODO: change to dynamic timezone based on DST
@@ -384,28 +433,53 @@ def groups():
             print('Event created: '+ (event.get('htmlLink')))
 
             calendars = db.execute("SELECT calendar_id FROM users WHERE id IN (SELECT user_id FROM members WHERE group_id = :group_id)", group_id=group_id)
+            personal_event = {
+              'summary': group_name + " - " +  course['subject'] + " " + course['courseno'] + " " + purpose,
+              'location': location,
+              'description': description,
+              'start': {
+                'dateTime': start,
+                'timeZone': 'America/New_York',
+              },
+              'end': {
+                'dateTime': end,
+                'timeZone': 'America/New_York',
+              }
+            }
+
             for calendar in calendars:
-                event = service.events().insert(calendarId=calendar["calendar_id"], body=event).execute()
+                event = service.events().insert(calendarId=calendar["calendar_id"], body=personal_event).execute()
 
             # Insert event into database
             db.execute("INSERT INTO events (group_id, purpose, location, description, start, end) VALUES (:group_id, :purpose, :location, :description, :start, :end)", group_id=group_id, purpose=purpose, location=location, description=description, start=start, end=end)
 
-            # TODO: Also insert event into personal calendars of those in the group
+        # Select all current / upcoming events
+        # TODO: Change -05:00 to dynamic timezone
+        group["events"] = db.execute("SELECT * FROM events WHERE group_id = :group_id AND replace(end, '-05:00', '') > strftime('%Y-%m-%dT%H:%M:%S', datetime('now', '-5 hours'))", group_id=group["id"])
 
+        group["events"] = sorted(group["events"], key = lambda i: i["start"])
 
+        for event in group["events"]:
+            event["start"] = datetime.strptime(event["start"].rsplit('-', 1)[0], "%Y-%m-%dT%H:%M:%S").strftime("%b %d, %Y - %I:%M %p")
+            event["end"] = datetime.strptime(event["end"].rsplit('-', 1)[0], "%Y-%m-%dT%H:%M:%S").strftime("%b %d, %Y - %I:%M %p")
+
+        group["members"] = db.execute("SELECT name FROM users WHERE id IN (SELECT user_id FROM members WHERE group_id = :group_id) ORDER BY name", group_id=group["id"])
 
         return render_template("grouphome.html", userinfo=session.get("userinfo"), group=group)
 
-
+'''
 @app.route("/settings")
 @login_required
 @register_required
 def settings():
     return render_template("settings.html", userinfo=session.get("userinfo"))
-
+'''
 
 @app.route("/groupme", methods=["POST"])
 def groupme():
+
+    print(request.json.get("system"))
+    print(request.json.get("text"))
 
     # When the first group member joins the GroupMe group
     if request.json.get("system") and "joined the group" in request.json.get("text"):

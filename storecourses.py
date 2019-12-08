@@ -1,4 +1,4 @@
-
+'''
 import pickle
 from cs50 import SQL
 from google.oauth2 import service_account
@@ -11,6 +11,8 @@ credentials = service_account.Credentials.from_service_account_file(
     SERVICE_ACCOUNT_FILE, scopes=SCOPES)
 
 service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
+'''
+
 '''
 courses = pickle.load(open("static/courses.p", "rb"))
 db = SQL("sqlite:///studygroupme.db")
@@ -41,6 +43,8 @@ def create():
         return redirect(url_for("groups"))
 
 '''
+
+'''
 rule = {
     'scope': {
         'type': 'default'
@@ -51,3 +55,16 @@ rule = {
 created_rule = service.acl().insert(calendarId='cm5uqi608rg59bd03bmlsiea1k@group.calendar.google.com', body=rule).execute()
 
 print(created_rule['id'])
+'''
+
+'''
+from groupy.client import Client
+from groupy.api.memberships import Memberships
+from groupy.api.bots import Bot, Bots
+
+client = Client.from_token("gtKf44NKan6p9pvI4ankqZKNFZ4mwInFC5SxwNZA")
+
+new_group = client.groups.create(name="GP Test")
+new_group.update(share=True)
+new_group.create_bot(name="StudyGroupMe", callback_url="https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080/groupme", dm_notification=False)
+'''

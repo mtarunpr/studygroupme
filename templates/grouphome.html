@@ -6,12 +6,49 @@
 
 {% block main %}
 
+{% if error == True %}
+<div class="alert alert-warning" role="alert">
+  <b>Error:</b> Start time cannot be in the past and must be before end time.
+</div>
+{% endif %}
+
 <div id="grouphome">
     <h1 align="left">{{group['name']}}</h1>
-    <h4 align="left">{{group['course']}} (Size: {{group['size']}}/{{group['maxsize']}})</h4>
-    <p align="left"> <b>Description:</b> {{group['description']}}</p>
+    <h4 align="left" class="gray">{{group['course']}} (Size: {{group['size']}}/{{group['maxsize']}})</h4>
+    {% if group['description'] != '' %}
+        <p align="left"> <b>Description:</b> {{group['description']}}</p>
+    {% endif %}
     <p align="left"><a href="{{group['groupme']}}" target="_blank"> <b>GroupMe Link</b> </a></h4>
-    <h3 align="left">Events</h3>
+
+    <div id="events-block">
+        <h4 align="left">Upcoming Events</h4>
+
+        {% if group["events"]|length == 0 %}
+        <p align="left" class="gray">Looks like your group has no scheduled events. Click below to create one!</p>
+
+        {% else %}
+        <table class="table table-striped" id="events-table">
+          <thead>
+            <tr>
+              <th scope="col">Start</th>
+              <th scope="col">End</th>
+              <th scope="col">Purpose</th>
+              <th scope="col">Location</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for event in group["events"] %}
+                <tr>
+                  <td>{{event["start"]}}</td>
+                  <td>{{event["end"]}}</td>
+                  <td>{{event["purpose"]}}</td>
+                  <td>{{event["location"]}}</td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+    {% endif %}
 
 
   <!-- Trigger the modal with a button -->
@@ -35,7 +72,7 @@
 
         <div class="form-group dropdown">
         <select required name="purpose" class="form-control">
-              <option selected disabled>Purpose</option>
+              <option selected disabled value="">Purpose</option>
               <option value="Problem Set">Problem Set</option>
               <option value="Exam Review">Exam Review</option>
               <option value="Group Study">Group Study</option>
@@ -89,6 +126,20 @@
 
     </div>
   </div>
+
+  <div id="members-block">
+    <h4 align="left">Members</h4>
+    <table class="table table-striped" id="members-table">
+      <tbody>
+        {% for member in group["members"] %}
+            <tr>
+              <td>{{member["name"]}}</td>
+            </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
 </div>
 
 <script>
@@ -103,6 +154,6 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/css/bootstrap-datetimepicker.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> <!-- Problematic, messes up CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"> <!-- TODO: Problematic, messes up CSS -->
 
 {% endblock %}

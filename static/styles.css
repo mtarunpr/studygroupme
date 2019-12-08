@@ -242,8 +242,8 @@ input[type=number]
 
 #grouphome
 {
-    margin-left: 20%;
-    margin-right: 20%;
+    margin-left: 10%;
+    margin-right: 10%;
 }
 
 #grouphome p
@@ -251,7 +251,7 @@ input[type=number]
     font-size: 16px;
 }
 
-#grouphome h4
+.gray
 {
     color: gray;
 }
@@ -261,15 +261,20 @@ input[type=number]
     text-align: left;
 }
 
-#calendar-div p
-{
-    font-size: 13px;
-}
-
-
 #text_join
 {
     color: black;
     margin-left: 26%;
     margin-right: 26%;
+    font-size: 13px;
+}
+
+#events-table, #members-table
+{
+    margin-top: 1px;
+}
+
+#events-block, #members-block
+{
+    margin-top: 30px;
 }
