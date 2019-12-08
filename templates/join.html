@@ -5,6 +5,23 @@
 {% endblock %}
 
 {% block main %}
+<div id="error-block">
+  {% if error == true %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="join-alert">
+      <b>Error:</b> Could not join group.
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  {% elif error == false %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert" id="join-alert">
+      Joined group successfully!
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  {% endif %}
+</div>
 
 <body onload="renderCalendar({{courses[0]['id']}})">
 
@@ -34,6 +51,7 @@
     }
     iframe = '<iframe src="https://calendar.google.com/calendar/embed?src=' + calendar_id + '&ctz=America%2FNew_York" style="border: 0" width="800" height="600" frameborder="0" scrolling="no"></iframe>';
     document.querySelector('#calendar-div').innerHTML = "<p id='text_join'>For each class, you can find all the study events in the calendar below. Click on an event to see the description and an option to join the group.</p>" + iframe;
+
   }
 
 </script>

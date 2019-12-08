@@ -285,6 +285,10 @@ def create():
 @login_required
 @register_required
 def join():
+
+    # Didn't click join, so no error/success possible
+    error = None
+
     # If Join Group link was clicked
     if request.args.get("group_id"):
         group_id = request.args.get("group_id")
@@ -299,13 +303,21 @@ def join():
         # Check if group is private
         isPublic = db.execute("SELECT ispublic FROM groups WHERE id = :group_id", group_id=group_id)[0]["ispublic"]
 
-        print(isMember)
-        print(belongsToClass)
-        print(isPublic)
+        # Check if group is at maxsize
+        size = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group_id)[0]["count(*)"]
+        maxsize = db.execute("SELECT maxsize FROM groups WHERE group_id = :group_id", group_id=group_id)[0]["maxsize"]
+        spaceAvaliable = size < maxsize
 
-        # If the user is not already a member of the group
-        # and is in the corresponding class, then add him to the group
-        if not isMember and belongsToClass and isPublic:
+        # Error if can't join
+        error = True
+
+        # If the user is not already a member of the public group,
+        # and is in the corresponding class,
+        # and there is space avaliable, then add him to the group
+        if not isMember and belongsToClass and isPublic and spaceAvaliable:
+            # Successfully joining
+            error = False
+
             db.execute("INSERT INTO members VALUES (:group_id, :user_id)", group_id=group_id, user_id=session["user_id"])
 
             # TODO: Add all current/future events of group to user's personal Google calendar
@@ -341,7 +353,7 @@ def join():
 
     courses = db.execute("SELECT * FROM courses WHERE id IN (SELECT course_id FROM classes WHERE user_id = :user_id)", user_id=session["user_id"])
     calendars = db.execute("SELECT * FROM calendars WHERE course_id IN (SELECT course_id FROM classes WHERE user_id = :user_id)", user_id=session["user_id"])
-    return render_template("join.html", userinfo=session.get("userinfo"), courses=courses, calendars=json.dumps(calendars))
+    return render_template("join.html", userinfo=session.get("userinfo"), courses=courses, calendars=json.dumps(calendars), error=error)
 
 
 @app.route("/groups", methods=["GET", "POST"])
@@ -365,6 +377,8 @@ def groups():
         group["size"] = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"])[0]["count(*)"]
         course = db.execute("SELECT * FROM courses WHERE id=:course_id", course_id=group["course_id"])[0]
         group["course"] = course["subject"] + " " + course["courseno"]
+        group["members"] = db.execute("SELECT name FROM users WHERE id IN (SELECT user_id FROM members WHERE group_id = :group_id) ORDER BY name", group_id=group["id"])
+
 
 
         # If event creation form was submitted
@@ -462,8 +476,6 @@ def groups():
         for event in group["events"]:
             event["start"] = datetime.strptime(event["start"].rsplit('-', 1)[0], "%Y-%m-%dT%H:%M:%S").strftime("%b %d, %Y - %I:%M %p")
             event["end"] = datetime.strptime(event["end"].rsplit('-', 1)[0], "%Y-%m-%dT%H:%M:%S").strftime("%b %d, %Y - %I:%M %p")
-
-        group["members"] = db.execute("SELECT name FROM users WHERE id IN (SELECT user_id FROM members WHERE group_id = :group_id) ORDER BY name", group_id=group["id"])
 
         return render_template("grouphome.html", userinfo=session.get("userinfo"), group=group)
 
