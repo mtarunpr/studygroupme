@@ -89,7 +89,6 @@ th, tr
 table
 {
     margin: auto;
-    margin-top: 5%;
 }
 
 
@@ -283,4 +282,12 @@ input[type=number]
 {
     margin-left: 33%;
     margin-right: 20%;
+}
+
+#register-text
+{
+    text-align: left;
+    margin-right: 20%;
+    margin-left: 40%;
+    margin-top: 25px;
 }

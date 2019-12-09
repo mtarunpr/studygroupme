@@ -16,7 +16,8 @@ from groupy.api.memberships import Memberships
 from groupy.api.bots import Bot, Bots
 from datetime import datetime
 
-url = "https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080"
+#url = "https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080"
+url = "http://study-group-me.herokuapp.com"
 
 # Constants for Google Calendar API
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -46,7 +47,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Database
-db = SQL("sqlite:///studygroupme.db")
+#db = SQL("sqlite:///studygroupme.db")
+db = SQL("postgres://qnziyzbwymfsla:3a68a9a35f4c7205ad2475757a6077da1145a5a6d6e461712c360182740f001f@ec2-174-129-253-63.compute-1.amazonaws.com:5432/d9ld1o62ljvagv")
 
 # Configure OAuth
 oauth = OAuth(app)
@@ -147,12 +149,14 @@ def register():
         if session["user_id"]:
             return redirect(url_for("index"))
 
+        error = bool(request.args.get('error'))
+
         # Get courses (dictionary) and subjects (list)
         courses = pickle.load(open("static/courses.p", "rb"))
         subjects = pickle.load(open("static/subjects.p", "rb"))
 
         # Renders register page
-        return render_template("register.html", userinfo=session.get("userinfo"), courses=json.dumps(courses), subjects=subjects)
+        return render_template("register.html", userinfo=session.get("userinfo"), courses=json.dumps(courses), subjects=subjects, error=error)
 
     # User reached route via POST (i.e. clicked on register button)
     else:
@@ -165,14 +169,14 @@ def register():
 
             # If error found, redirect back to register
             if request.form.get(sub_name) != "Subject" and request.form.get(num_name) == "Number":
-                return redirect(url_for("register"))
+                return redirect(url_for("register", error=True))
 
             if request.form.get(sub_name) == "Subject":
                 count += 1
 
         # Make sure user inputted at least one class
         if count == 5:
-            return redirect(url_for("register"))
+            return redirect(url_for("register", error=True))
 
         service = googleapiclient.discovery.build('calendar', 'v3', credentials=credentials)
 
@@ -305,7 +309,7 @@ def join():
 
         # Check if group is at maxsize
         size = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group_id)[0]["count(*)"]
-        maxsize = db.execute("SELECT maxsize FROM groups WHERE group_id = :group_id", group_id=group_id)[0]["maxsize"]
+        maxsize = db.execute("SELECT maxsize FROM groups WHERE id = :group_id", group_id=group_id)[0]["maxsize"]
         spaceAvaliable = size < maxsize
 
         # Error if can't join
