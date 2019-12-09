@@ -16,6 +16,11 @@ from groupy.api.memberships import Memberships
 from groupy.api.bots import Bot, Bots
 from datetime import datetime
 
+# Check for environment variables
+for variable in ["CLIENT_ID", "CLIENT_SECRET", "SERVER_METADATA_URL", "BASE_URL"]:
+    if not os.environ.get(variable):
+        abort(500, f"Missing f{variable}")
+
 # TO BE CHANGED
 url = os.environ.get("BASE_URL")
 #url = "https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080"
@@ -29,12 +34,6 @@ credentials = service_account.Credentials.from_service_account_file(
 
 # Client token for GroupMe
 client = Client.from_token("7b7vsWzmxrF9vKTpQNOlcRiKbIgGtlx4wtHaDpsN")
-
-# Check for environment variables
-for variable in ["CLIENT_ID", "CLIENT_SECRET", "SERVER_METADATA_URL"]:
-    if not os.environ.get(variable):
-        abort(500, f"Missing f{variable}")
-
 
 # Configure application
 app = Flask(__name__)

@@ -8,7 +8,7 @@ First, make note of your CS50 IDE's Web Server URL (in this example, we will use
 
 Next, execute the following exports in the terminal of your CS50 IDE, with the values obtained from the client created in CS50 ID. We give our example below:
 
-```export BASE_URL=http://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080
+```export BASE_URL=https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080
 export CLIENT_ID=U32mPdjv1ZWLiGRfLgux3zxtDRu0HC5C
 export CLIENT_SECRET=q35gxqRhjfX1177Otr9EgVFL6SaC1y7BHV_e1hCIMwfze0_5HYj14q01WYIRf00R
 export SERVER_METADATA_URL=https://id50.auth0.com/.well-known/openid-configuration
