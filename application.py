@@ -368,6 +368,7 @@ def groups():
     if request.method == "GET":
         groups = db.execute("SELECT * FROM groups WHERE id IN (SELECT group_id FROM members WHERE user_id = :user_id)", user_id=session["user_id"])
         for group in groups:
+            print(db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"]))
             group["size"] = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"])[0]["count(*)"]
             course = db.execute("SELECT * FROM courses WHERE id=:course_id", course_id=group["course_id"])[0]
             group["course"] = course["subject"] + " " + course["courseno"]
