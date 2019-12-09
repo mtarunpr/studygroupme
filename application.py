@@ -17,7 +17,7 @@ from groupy.api.bots import Bot, Bots
 from datetime import datetime
 
 #url = "https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080"
-url = "http://study-group-me.herokuapp.com"
+url = "https://study-group-me.herokuapp.com"
 
 # Constants for Google Calendar API
 SCOPES = ['https://www.googleapis.com/auth/calendar']
