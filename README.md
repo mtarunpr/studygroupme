@@ -4,7 +4,26 @@
 StudyGroupMe is a web application that facilitates the creation/scheduling of study groups in classes at Harvard College. You can see when/where study groups are meeting in your classes on a publicly-viewable class calendar, and you can join those groups. You can also create new groups and create new events for your groups.
 
 ## Access
-The website can be accessed at __________
+First, make note of your CS50 IDE's Web Server URL (in this example, we will use http://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080). Then, log in to CS50 ID at https://id.cs50.io/ and create a client with any description and a callback URL of http://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080/callback (replacing the base URL with your own).
+
+Next, execute the following exports in the terminal of your CS50 IDE, with the values obtained from the client created in CS50 ID. We give our example below:
+
+```export BASE_URL=http://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080
+export CLIENT_ID=U32mPdjv1ZWLiGRfLgux3zxtDRu0HC5C
+export CLIENT_SECRET=q35gxqRhjfX1177Otr9EgVFL6SaC1y7BHV_e1hCIMwfze0_5HYj14q01WYIRf00R
+export SERVER_METADATA_URL=https://id50.auth0.com/.well-known/openid-configuration
+```
+
+Important note: `BASE_URL` should NOT have a forward slash at the end.
+
+Finally, execute the following `pip` installs in the terminal of your CS50 IDE:
+
+```sudo pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+sudo pip install authlib
+sudo pip install GroupyAPI
+```
+
+Now you are ready to run `flask run` in the `studygroupme` directory to get the app running.
 
 ## Functionality
 When you open the website, a welcome page is displayed with a brief description of the goal of the site and a “Log In” button. We use HarvardKey authentication for the login to ensure that only students belonging to Harvard University can access the website.
