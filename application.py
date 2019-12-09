@@ -17,11 +17,10 @@ from groupy.api.bots import Bot, Bots
 from datetime import datetime
 
 # Check for environment variables
-for variable in ["CLIENT_ID", "CLIENT_SECRET", "SERVER_METADATA_URL", "BASE_URL"]:
+for variable in ["CLIENT_ID", "CLIENT_SECRET", "SERVER_METADATA_URL", "BASE_URL", "DATABASE_URL"]:
     if not os.environ.get(variable):
         abort(500, f"Missing f{variable}")
 
-# TO BE CHANGED
 url = os.environ.get("BASE_URL")
 #url = "https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080"
 #url = "https://study-group-me.herokuapp.com"
@@ -48,8 +47,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Database
-db = SQL("sqlite:///studygroupme.db")
-#db = SQL("postgres://qnziyzbwymfsla:3a68a9a35f4c7205ad2475757a6077da1145a5a6d6e461712c360182740f001f@ec2-174-129-253-63.compute-1.amazonaws.com:5432/d9ld1o62ljvagv")
+#db = SQL("sqlite:///studygroupme.db")
+db = SQL(os.environ.get("DATABASE_URL"))
 
 # Configure OAuth
 oauth = OAuth(app)
