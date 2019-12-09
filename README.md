@@ -4,7 +4,7 @@
 StudyGroupMe is a web application that facilitates the creation/scheduling of study groups in classes at Harvard College. You can see when/where study groups are meeting in your classes on a publicly-viewable class calendar, and you can join those groups. You can also create new groups and create new events for your groups.
 
 ## Access
-First, make note of your CS50 IDE's Web Server URL (in this example, we will use http://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080). Then, log in to CS50 ID at https://id.cs50.io/ and create a client with any description and a callback URL of http://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080/callback (replacing the base URL with your own).
+First, make note of your CS50 IDE's Web Server URL (in this example, we will use https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080). Then, log in to CS50 ID at https://id.cs50.io/ and create a client with any description and a callback URL of https://afb8e24f-717d-4d78-ae73-762b8eee933e-ide.cs50.xyz:8080/callback (replacing the base URL with your own).
 
 Next, execute the following exports in the terminal of your CS50 IDE, with the values obtained from the client created in CS50 ID. We give our example below:
 
