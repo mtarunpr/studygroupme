@@ -298,17 +298,17 @@ def join():
         group_id = request.args.get("group_id")
 
         # Check if user is already member of the group
-        isMember = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id AND user_id = :user_id", group_id=group_id, user_id=session["user_id"])[0]['count(*)']
+        isMember = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id AND user_id = :user_id", group_id=group_id, user_id=session["user_id"])[0]['count']
 
         # Check if user belongs to the class
         # associated with the group to be joined
-        belongsToClass = db.execute("SELECT count(*) FROM classes WHERE user_id = :user_id AND course_id = (SELECT course_id FROM groups WHERE id = :group_id)", user_id=session["user_id"], group_id=group_id)[0]['count(*)']
+        belongsToClass = db.execute("SELECT count(*) FROM classes WHERE user_id = :user_id AND course_id = (SELECT course_id FROM groups WHERE id = :group_id)", user_id=session["user_id"], group_id=group_id)[0]['count']
 
         # Check if group is private
         isPublic = db.execute("SELECT ispublic FROM groups WHERE id = :group_id", group_id=group_id)[0]["ispublic"]
 
         # Check if group is at maxsize
-        size = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group_id)[0]["count(*)"]
+        size = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group_id)[0]["count"]
         maxsize = db.execute("SELECT maxsize FROM groups WHERE id = :group_id", group_id=group_id)[0]["maxsize"]
         spaceAvaliable = size < maxsize
 
@@ -369,7 +369,7 @@ def groups():
         groups = db.execute("SELECT * FROM groups WHERE id IN (SELECT group_id FROM members WHERE user_id = :user_id)", user_id=session["user_id"])
         for group in groups:
             print(db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"]))
-            group["size"] = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"])[0]["count(*)"]
+            group["size"] = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"])[0]["count"]
             course = db.execute("SELECT * FROM courses WHERE id=:course_id", course_id=group["course_id"])[0]
             group["course"] = course["subject"] + " " + course["courseno"]
         return render_template("groups.html", userinfo=session.get("userinfo"), groups=groups)
@@ -379,7 +379,7 @@ def groups():
         group_id = request.form.get("group-id")
         group = db.execute("SELECT * FROM groups WHERE id = :group_id", group_id=group_id)[0]
 
-        group["size"] = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"])[0]["count(*)"]
+        group["size"] = db.execute("SELECT count(*) FROM members WHERE group_id = :group_id", group_id=group["id"])[0]["count"]
         course = db.execute("SELECT * FROM courses WHERE id=:course_id", course_id=group["course_id"])[0]
         group["course"] = course["subject"] + " " + course["courseno"]
         group["members"] = db.execute("SELECT name FROM users WHERE id IN (SELECT user_id FROM members WHERE group_id = :group_id) ORDER BY name", group_id=group["id"])
